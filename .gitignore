@@ -1,0 +1,38 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Shareme FE
+
+# dependencies
+*/node_modules
+shareme_fe/.pnp
+shareme_fe/.pnp.js
+
+# testing
+shareme_fe/coverage
+
+# production
+shareme_fe/build
+
+# misc
+shareme_fe/.DS_Store
+shareme_fe/.env.local
+shareme_fe/.env.development.local
+shareme_fe/.env.test.local
+shareme_fe/.env.production.local
+
+shareme_fe/npm-debug.log*
+shareme_fe/yarn-debug.log*
+shareme_fe/yarn-error.log*
+
+# Shareme BE
+
+# Logs
+shareme_be/logs
+shareme_be/*.log
+
+# Coverage directory used by tools like istanbul
+shareme_be/coverage
+
+# Compiled sanity studio
+shareme_be/dist
+.DS_Store
