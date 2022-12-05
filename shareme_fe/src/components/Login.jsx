@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
@@ -6,9 +6,11 @@ import { client } from "../client";
 
 import shareVideo from "../assets/share.mp4";
 import logo from "../assets/logowhite.png";
+import { fetchUser } from "../utils/fetchUser";
 
 const Login = () => {
   const navigate = useNavigate();
+  const user = fetchUser();
 
   const responseGoogle = (res) => {
     const decoded = jwt_decode(res.credential);
@@ -26,6 +28,11 @@ const Login = () => {
 
     client.createIfNotExists(doc).then(() => navigate("/", { replace: true }));
   };
+
+  useEffect(() => {
+    if (user) return navigate("/", { replace: true });
+  }, [user, navigate]);
+
   return (
     <div className="flex justify-start items-center flex-col h-screen">
       <div className="relative w-full h-full">

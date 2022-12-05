@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
+import { FcInfo } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 
 import { client } from "../client";
@@ -18,6 +19,39 @@ const CreatePin = ({ user }) => {
   const [wrongImageType, setWrongImageType] = useState(false);
 
   const navigate = useNavigate();
+
+  // const uploadBulk = async (e) => {
+  //   for (let i = 0; i < e.target.files.length; i++) {
+  //     const file = e.target.files[i];
+  //     const img = await client.assets.upload("image", file, {
+  //       contentType: file.type,
+  //       filename: file.name,
+  //     });
+
+  //     const doc = {
+  //       _type: "pin",
+  //       title: file.name,
+  //       about,
+  //       destination: "",
+  //       image: {
+  //         _type: "image",
+  //         asset: {
+  //           _type: "reference",
+  //           _ref: img?._id,
+  //         },
+  //       },
+  //       userId: "f93d3c15-d232-4df1-947d-76cd7f40138a",
+  //       postedBy: {
+  //         _type: "postedBy",
+  //         _ref: "f93d3c15-d232-4df1-947d-76cd7f40138a",
+  //       },
+  //       category,
+  //       state: "published",
+  //     };
+
+  //     await client.create(doc);
+  //   }
+  // };
 
   const uploadImage = (e) => {
     const { type, name } = e.target.files[0];
@@ -47,8 +81,10 @@ const CreatePin = ({ user }) => {
     }
   };
 
-  const savePin = () => {
+  const savePin = (state) => {
     if (title && about && destination && imageAsset?._id && category) {
+      setLoading(true);
+
       const doc = {
         _type: "pin",
         title,
@@ -67,11 +103,13 @@ const CreatePin = ({ user }) => {
           _ref: user?._id,
         },
         category,
+        state,
       };
 
       client.create(doc).then(() => navigate("/"));
     } else {
       setFields(true);
+      setLoading(false);
 
       setTimeout(() => setFields(false), 2000);
     }
@@ -185,12 +223,25 @@ const CreatePin = ({ user }) => {
             <div className="flex justify-end items-end mt-5">
               <button
                 type="button"
-                onClick={savePin}
+                onClick={() => savePin("draft")}
+                disabled={loading}
+                className="bg-black text-white font-bold p-2 mx-2 rounded-full w-28 outline-none"
+              >
+                Save Draft
+              </button>
+              <button
+                type="button"
+                onClick={() => savePin("published")}
+                disabled={loading}
                 className="bg-red-500 text-white font-bold p-2 rounded-full w-28 outline-none"
               >
-                Save Pin
+                Publish Pin
               </button>
             </div>
+            <p className="flex justify-center items-center align-middle mt-2">
+              <FcInfo className="mr-2" /> If you save as draft only you can see
+              the Pin from your profile.
+            </p>
           </div>
         </div>
       </div>

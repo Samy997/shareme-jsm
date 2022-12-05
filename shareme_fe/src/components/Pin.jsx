@@ -8,7 +8,10 @@ import { BsFillArrowUpRightCircleFill } from "react-icons/bs";
 import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
 
-const Pin = ({ pin: { postedBy, image, _id, destination, save } }) => {
+const Pin = ({
+  pin: { postedBy, image, _id, destination, save },
+  showBtns = true,
+}) => {
   const [postHovered, setPostHovered] = useState(false);
 
   const navigate = useNavigate();
@@ -38,7 +41,11 @@ const Pin = ({ pin: { postedBy, image, _id, destination, save } }) => {
   };
 
   const deletePin = (id) => {
-    client.delete(id).then(() => window.location.reload());
+    client
+      .patch(id)
+      .set({ state: "deleted" })
+      .commit()
+      .then(() => window.location.reload());
   };
 
   return (

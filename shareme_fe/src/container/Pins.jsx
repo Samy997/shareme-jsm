@@ -1,17 +1,30 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { AiOutlineLogin } from "react-icons/ai";
+import { Routes, Route, Link } from "react-router-dom";
 import { Navbar, Feed, PinDetail, CreatePin, Search } from "../components";
+
 const Pins = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="px-2 md:px-5">
       <div className="bg-gray-50">
-        <Navbar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          user={user}
-        />
+        {user ? (
+          <Navbar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            user={user}
+          />
+        ) : (
+          <div className="text-end mt-2">
+            <Link
+              to="/login"
+              className="inline-block bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
+            >
+              <AiOutlineLogin color="red" fontSize={21} />
+            </Link>
+          </div>
+        )}
       </div>
       <div className="h-full">
         <Routes>

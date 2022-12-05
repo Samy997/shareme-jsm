@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MdDownloadForOffline } from "react-icons/md";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 import MasonryLayout from "./MasonryLayout";
@@ -8,6 +8,7 @@ import Spinner from "./Spinner";
 
 import { client, urlFor } from "../client";
 import { pinDetailMorePinQuery, pinDetailQuery } from "../utils/data";
+import { AiTwotoneDelete } from "react-icons/ai";
 
 const PinDetail = ({ user }) => {
   const [pins, setPins] = useState(null);
@@ -16,6 +17,7 @@ const PinDetail = ({ user }) => {
   const [addingComment, setAddingComment] = useState(false);
 
   const { pinId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPinDetails();
@@ -48,16 +50,30 @@ const PinDetail = ({ user }) => {
   };
 
   const fetchPinDetails = () => {
-    let query = pinDetailQuery(pinId);
+    let query = pinDetailQuery(pinId, user?._id);
 
-    client.fetch(query).then((data) => {
-      setPinDetail(data[0]);
+    client
+      .fetch(query)
+      .then((data) => {
+        setPinDetail(data[0]);
 
-      if (data[0]) {
-        query = pinDetailMorePinQuery(data[0]);
-        client.fetch(query).then((res) => setPins(res));
-      }
-    });
+        if (data[0]) {
+          query = pinDetailMorePinQuery(data[0]);
+          client.fetch(query).then((res) => setPins(res));
+        }
+      })
+      .catch((err) => navigate("/"));
+  };
+
+  const deletePin = (id) => {
+    client
+      .patch(id)
+      .set({ state: "deleted" })
+      .commit()
+      .then(() => {
+        navigate("/");
+        window.location.reload();
+      });
   };
 
   if (!pinDetail) return <Spinner message="Loading Pin..." />;
@@ -86,6 +102,18 @@ const PinDetail = ({ user }) => {
               >
                 <MdDownloadForOffline />
               </a>
+              {pinDetail?.postedBy?._id === user?._id && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deletePin(user?._id);
+                  }}
+                  className="bg-white p-2 opacity-70 hover:opacity-100 font-bold text-dark text-base rounded-3xl hover:shadow-md outline-none"
+                >
+                  <AiTwotoneDelete />
+                </button>
+              )}
             </div>
             <a href={pinDetail?.destination} target="_blank" rel="noreferrer">
               {pinDetail?.destination}
@@ -117,11 +145,13 @@ const PinDetail = ({ user }) => {
                 className="flex gap-2 mt-5 items-center bg-white rounded-lg"
                 key={i}
               >
-                <img
-                  src={comment.postedBy.image}
-                  alt="user-profile"
-                  className="w-10 h-10 rounded-full cursor-pointer"
-                />
+                <Link to={`/user-profile/${comment.postedBy?._id}`}>
+                  <img
+                    className="w-10 h-10 rounded-full cursor-pointer"
+                    src={comment.postedBy?.image}
+                    alt="user-profile"
+                  />
+                </Link>
                 <div className="flex flex-col">
                   <p className="font-bold">{comment.postedBy.userName}</p>
                   <p>{comment.comment}</p>
@@ -130,7 +160,7 @@ const PinDetail = ({ user }) => {
             ))}
           </div>
           <div className="flex flex-wrap mt-6 gap-3">
-            <Link to={`/user-profile/${user?.__id}`}>
+            <Link to={`/user-profile/${user?._id}`}>
               <img
                 className="w-10 h-10 rounded-full cursor-pointer"
                 src={user?.image}

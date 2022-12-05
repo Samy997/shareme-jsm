@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 
 import {
+  deletedPinsQuery,
+  draftPinsQuery,
   userCreatedPinsQuery,
   userQuery,
   userSavedPinsQuery,
@@ -22,7 +24,7 @@ const activeBtnStyles =
 const notActiveBtnStyles =
   "bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none";
 
-const UserProfile = () => {
+const UserProfile = ({ loggedUser }) => {
   const [user, setUser] = useState(null);
   const [pins, setPins] = useState(null);
   const [text, setText] = useState("Created");
@@ -76,7 +78,7 @@ const UserProfile = () => {
               {user?.userName}
             </h1>
             <div className="absolute top-0 z-1 right-0 p-2">
-              {userId === user?._id && (
+              {userId === loggedUser?._id && (
                 <button
                   onClick={logout}
                   type="button"
@@ -111,11 +113,43 @@ const UserProfile = () => {
               >
                 Saved
               </button>
+              {userId === loggedUser?._id && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setActiveBtn("draft");
+                    client.fetch(draftPinsQuery).then((data) => setPins(data));
+                  }}
+                  className={`${
+                    activeBtn === "draft" ? activeBtnStyles : notActiveBtnStyles
+                  }`}
+                >
+                  Draft
+                </button>
+              )}
+              {user && user.role === "Admin" && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setActiveBtn("deleted");
+                    client
+                      .fetch(deletedPinsQuery)
+                      .then((data) => setPins(data));
+                  }}
+                  className={`${
+                    activeBtn === "deleted"
+                      ? activeBtnStyles
+                      : notActiveBtnStyles
+                  }`}
+                >
+                  Deleted
+                </button>
+              )}
             </div>
 
             {pins?.length ? (
               <div className="px-2">
-                <MasonryLayout pins={pins} />
+                <MasonryLayout showBtns={false} pins={pins} />
               </div>
             ) : (
               <div className="flex justify-center font-bold items-center w-full text-xl mt-2">
