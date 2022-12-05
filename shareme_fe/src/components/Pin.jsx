@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { MdDownloadForOffline } from "react-icons/md";
@@ -13,10 +13,10 @@ const Pin = ({
   showBtns = true,
 }) => {
   const [postHovered, setPostHovered] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  const alreadySaved = save?.some((item) => item.postedBy._id === user?.sub);
 
   const savePin = (id) => {
     if (!alreadySaved) {
@@ -35,7 +35,7 @@ const Pin = ({
         ])
         .commit()
         .then(() => {
-          window.location.reload();
+          setAlreadySaved(true);
         });
     }
   };
@@ -47,6 +47,10 @@ const Pin = ({
       .commit()
       .then(() => window.location.reload());
   };
+
+  useEffect(() => {
+    setAlreadySaved(save?.some((item) => item.postedBy?._id === user?.sub));
+  }, [save, user]);
 
   return (
     <div className="m-2 ">
@@ -77,23 +81,17 @@ const Pin = ({
                   <MdDownloadForOffline />
                 </a>
               </div>
-              {alreadySaved ? (
-                <button
-                  type="button"
-                  className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
-                >
-                  {save?.length} Saved
-                </button>
-              ) : (
+              {user && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     savePin(_id);
                   }}
+                  disabled={alreadySaved}
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  Save
+                  {alreadySaved ? save.length + " Saved" : "Save"}
                 </button>
               )}
             </div>
