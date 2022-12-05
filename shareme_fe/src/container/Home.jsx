@@ -66,7 +66,9 @@ const Home = () => {
         <Routes>
           <Route
             path="/user-profile/:userId"
-            element={<UserProfile loggedUser={user && user} />}
+            element={
+              <UserProfile loggedUser={user && user} setLoggedUser={setUser} />
+            }
           />
           <Route path="/*" element={<Pins user={user && user} />} />
         </Routes>

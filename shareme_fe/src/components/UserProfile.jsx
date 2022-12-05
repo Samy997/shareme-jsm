@@ -24,7 +24,7 @@ const activeBtnStyles =
 const notActiveBtnStyles =
   "bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none";
 
-const UserProfile = ({ loggedUser }) => {
+const UserProfile = ({ loggedUser, setLoggedUser }) => {
   const [user, setUser] = useState(null);
   const [pins, setPins] = useState(null);
   const [text, setText] = useState("Created");
@@ -37,6 +37,7 @@ const UserProfile = ({ loggedUser }) => {
     googleLogout();
     localStorage.clear();
 
+    setLoggedUser(null);
     navigate("/");
   };
 
