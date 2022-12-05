@@ -139,50 +139,61 @@ const PinDetail = ({ user }) => {
             </p>
           </Link>
           <h2 className="mt-5 text-2xl">Comments</h2>
-          <div className="max-h-370 overflow-y-auto">
-            {pinDetail?.comments?.map((comment, i) => (
-              <div
-                className="flex gap-2 mt-5 items-center bg-white rounded-lg"
-                key={i}
-              >
-                <Link to={`/user-profile/${comment.postedBy?._id}`}>
+          {user ? (
+            <>
+              <div className="max-h-370 overflow-y-auto">
+                {pinDetail?.comments?.map((comment, i) => (
+                  <div
+                    className="flex gap-2 mt-5 items-center bg-white rounded-lg"
+                    key={i}
+                  >
+                    <Link to={`/user-profile/${comment.postedBy?._id}`}>
+                      <img
+                        className="w-10 h-10 rounded-full cursor-pointer"
+                        src={comment.postedBy?.image}
+                        alt="user-profile"
+                      />
+                    </Link>
+                    <div className="flex flex-col">
+                      <p className="font-bold">{comment.postedBy.userName}</p>
+                      <p>{comment.comment}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap mt-6 gap-3">
+                <Link to={`/user-profile/${user?._id}`}>
                   <img
                     className="w-10 h-10 rounded-full cursor-pointer"
-                    src={comment.postedBy?.image}
+                    src={user?.image}
                     alt="user-profile"
                   />
                 </Link>
-                <div className="flex flex-col">
-                  <p className="font-bold">{comment.postedBy.userName}</p>
-                  <p>{comment.comment}</p>
-                </div>
+                <input
+                  type="text"
+                  className="flex-1 border-gray-100 outline-none border-2 p-2 rounded-2xl focus:border-gray-300"
+                  placeholder="Add a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <button
+                  onClick={addComment}
+                  type="button"
+                  disabled={addingComment}
+                  className="bg-red-500 text-white rounded-full px-6 py-2 font-semibold text-base outline-none"
+                >
+                  {addingComment ? "Posting the comment..." : "Post"}
+                </button>
               </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap mt-6 gap-3">
-            <Link to={`/user-profile/${user?._id}`}>
-              <img
-                className="w-10 h-10 rounded-full cursor-pointer"
-                src={user?.image}
-                alt="user-profile"
-              />
-            </Link>
-            <input
-              type="text"
-              className="flex-1 border-gray-100 outline-none border-2 p-2 rounded-2xl focus:border-gray-300"
-              placeholder="Add a comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <button
-              onClick={addComment}
-              type="button"
-              disabled={addingComment}
-              className="bg-red-500 text-white rounded-full px-6 py-2 font-semibold text-base outline-none"
-            >
-              {addingComment ? "Posting the comment..." : "Post"}
-            </button>
-          </div>
+            </>
+          ) : (
+            <p className="text-center mt-5 text-red-500">
+              <Link to="/login" className="text-blue-500">
+                Login
+              </Link>{" "}
+              to be able to view comments and comment
+            </p>
+          )}
         </div>
       </div>
       {pins?.length > 0 ? (
